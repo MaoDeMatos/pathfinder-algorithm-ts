@@ -13,3 +13,11 @@ It must :
 - Return the distance of the shortest path
 - Return the map with the path displayed
 - Return an error message if there are no paths, invalid data is provided, etc...
+
+## Start
+
+```sh
+yarn dev
+# or
+npm run dev
+```
