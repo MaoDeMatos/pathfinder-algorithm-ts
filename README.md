@@ -21,3 +21,14 @@ yarn dev
 # or
 npm run dev
 ```
+
+## Use a JSON file
+
+```sh
+yarn dev --jsonFile={filename}
+# or
+yarn dev -f {filename}
+# example
+yarn dev --jsonFile=./data/simple.json
+yarn dev -f "./data/simple.json"
+```

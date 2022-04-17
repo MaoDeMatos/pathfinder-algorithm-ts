@@ -1,3 +1,30 @@
+export const consoleColors = {
+  red: "\x1b[31m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  green: "\x1b[92m",
+  gray: "\x1b[90m",
+  default: "\x1b[0m",
+};
+
+type ColorLogArgs = {
+  color?: "red" | "yellow" | "blue" | "green" | "gray" | "default";
+  output: any;
+  newLine?: boolean;
+};
+
+export function coloredLog({
+  color = "default",
+  output,
+  newLine = false,
+}: ColorLogArgs) {
+  console.log(
+    `${consoleColors[color]}%s${consoleColors.default}`,
+    output,
+    newLine ? "\n" : ""
+  );
+}
+
 export function arrayToMatrix(rawData: RawData) {
   const matrix: Matrix = {
     map: [],
