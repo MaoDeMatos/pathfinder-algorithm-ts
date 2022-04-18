@@ -7,54 +7,59 @@ export const consoleColors = {
   default: "\x1b[0m",
 };
 
-type ColorLogArgs = {
-  color?: "red" | "yellow" | "blue" | "green" | "gray" | "default";
-  output: any;
-  newLine?: boolean;
-};
-
-export function coloredLog({
+export const coloredLog = ({
   color = "default",
   output,
-  newLine = false,
-}: ColorLogArgs) {
-  console.log(
-    `${consoleColors[color]}%s${consoleColors.default}`,
-    output,
-    newLine ? "\n" : ""
-  );
-}
+}: {
+  color?: "red" | "yellow" | "blue" | "green" | "gray" | "default";
+  output: any;
+}) => {
+  console.log(`${consoleColors[color]}%s${consoleColors.default}`, output);
+};
 
-export function arrayToMatrix(rawData: RawData) {
-  const matrix: Matrix = {
-    map: [],
-    findNodeByPos: function (map, x, y) {
-      const foundNode = map.find((el) => el.x == x && el.y == y);
-      if (foundNode) return foundNode;
-      throw new Error();
-    },
+export const arrayToMatrix = (rawData: RawData) => {
+  const findByType = (map: MatrixNode[], type: string) => {
+    const foundNode = map.find((el) => el.type == type);
+    if (foundNode) return foundNode;
+    throw new Error(`Could not find "${type}" node`);
   };
 
-  for (let i = 0; i < rawData.length; i++) {
+  const matrix: Matrix = {
+    map: [],
+    initialPos: (map) => findByType(map, "start"),
+    finalPos: (map) => findByType(map, "end"),
+  };
+
+  let i = 0;
+  let j = 0;
+
+  for (i = 0; i < rawData.length; i++) {
     const line = rawData[i];
 
-    for (let j = 0; j < line.length; j++) {
+    for (j = 0; j < line.length; j++) {
       const value = line[j];
+      const valueString = value.toString().toLowerCase();
       const thisNode: MatrixNode = {
         x: i + 1,
         y: j + 1,
         value: value,
-        blocked: value == 1 ? false : true,
+        visited: false,
+        blocked:
+          value == 1 || valueString == "s" || valueString == "e" ? false : true,
+        type:
+          valueString == "s" ? "start" : valueString == "e" ? "end" : "normal",
       };
 
       matrix.map.push(thisNode);
     }
   }
 
-  return matrix;
-}
+  matrix.size = [i, j];
 
-export function matrixToArray(matrix: Matrix) {
+  return matrix;
+};
+
+export const matrixToArray = (matrix: Matrix) => {
   const map: RawData = [];
 
   matrix.map.forEach((el) => {
@@ -68,4 +73,7 @@ export function matrixToArray(matrix: Matrix) {
   });
 
   return map;
-}
+};
+
+export const findNodeByPos = (map: MatrixNode[], x: number, y: number) =>
+  map.find((el) => el.x == x && el.y == y);

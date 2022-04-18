@@ -1,10 +1,12 @@
-type findPathParamsType = {
-  matrix: Matrix;
-  initialPos: MatrixNode;
-  finalPos: MatrixNode;
-};
+// type findPathParamsType = {
+//   matrix: Matrix;
+//   initialPos: MatrixNode;
+//   finalPos: MatrixNode;
+// };
 
-export function findPath({ matrix, initialPos, finalPos }: findPathParamsType) {
+import { findNodeByPos } from "./utils";
+
+export const findPath = (matrix: Matrix): string | Matrix => {
   const directions: number[][] = [
     [-1, 0],
     [1, 0],
@@ -12,17 +14,43 @@ export function findPath({ matrix, initialPos, finalPos }: findPathParamsType) {
     [0, 1],
   ];
 
-  if (initialPos.blocked) {
-    return "Initial position blocked";
+  const initialPos = matrix.initialPos(matrix.map);
+  const finalPos = matrix.finalPos(matrix.map);
+
+  if (initialPos.blocked || finalPos.blocked) {
+    return "Initial or final position blocked";
+  } else {
+    initialPos.visited = true;
   }
 
-  if (finalPos.blocked) {
-    return "Final position blocked";
+  const map = matrix.map;
+  const queue: {
+    currentNode: MatrixNode;
+    path: MatrixNode[];
+  }[] = [{ currentNode: initialPos, path: [] }];
+
+  while (queue.length > 0) {
+    const { currentNode, path } = queue.shift()!;
+    const { x, y } = currentNode;
+
+    if (currentNode.type == "end") {
+      queue.length = 0;
+      const newMatrix: Matrix = { ...matrix, map: map, shortestPath: path };
+      return newMatrix;
+      // return `Final position reached within ${path.length} steps.`;
+    }
+
+    path.push(currentNode);
+
+    for (const [dX, dY] of directions) {
+      const nextNode = findNodeByPos(map, x + dX, y + dY);
+
+      if (nextNode != undefined && !nextNode.blocked && !nextNode.visited) {
+        nextNode.visited = true;
+        queue.push({ currentNode: nextNode, path: [...path] });
+      }
+    }
   }
 
-  if (initialPos.x == finalPos.x && initialPos.y == finalPos.y) {
-    return "Final position reached";
-  }
-
-  // return { matrix, initialPos, finalPos };
-}
+  return "Could not find a way to the end";
+};
