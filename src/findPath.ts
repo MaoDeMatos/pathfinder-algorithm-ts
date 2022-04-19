@@ -6,7 +6,7 @@
 
 import { findNodeByPos } from "./utils";
 
-export const findPath = (matrix: Matrix): string | Matrix => {
+export const findPath = (matrix: Matrix): Matrix => {
   const directions: number[][] = [
     [-1, 0],
     [1, 0],
@@ -18,7 +18,8 @@ export const findPath = (matrix: Matrix): string | Matrix => {
   const finalPos = matrix.finalPos(matrix.map);
 
   if (initialPos.blocked || finalPos.blocked) {
-    return "Initial or final position blocked";
+    matrix.conditions.canStart == false;
+    return matrix;
   } else {
     initialPos.visited = true;
   }
@@ -35,9 +36,13 @@ export const findPath = (matrix: Matrix): string | Matrix => {
 
     if (currentNode.type == "end") {
       queue.length = 0;
-      const newMatrix: Matrix = { ...matrix, map: map, shortestPath: path };
+      const newMatrix: Matrix = {
+        ...matrix,
+        map: map,
+        shortestPath: path,
+        conditions: { success: true },
+      };
       return newMatrix;
-      // return `Final position reached within ${path.length} steps.`;
     }
 
     path.push(currentNode);
@@ -52,5 +57,6 @@ export const findPath = (matrix: Matrix): string | Matrix => {
     }
   }
 
-  return "Could not find a way to the end";
+  matrix.conditions.success = false;
+  return matrix;
 };

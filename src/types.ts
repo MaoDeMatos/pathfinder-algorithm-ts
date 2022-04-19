@@ -4,6 +4,10 @@ type Matrix = {
   map: MatrixNode[];
   size?: number[];
   shortestPath?: MatrixNode[];
+  conditions: {
+    canStart?: boolean;
+    success?: boolean;
+  };
   initialPos: (map: MatrixNode[]) => MatrixNode;
   finalPos: (map: MatrixNode[]) => MatrixNode;
 };
