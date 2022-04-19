@@ -7,15 +7,13 @@ export const consoleColors = {
   default: "\x1b[0m",
 };
 
-export const coloredLog = ({
+export const coloredString = ({
   color = "default",
   output,
 }: {
   color?: "red" | "yellow" | "blue" | "green" | "gray" | "default";
   output: any;
-}) => {
-  console.log(`${consoleColors[color]}%s${consoleColors.default}`, output);
-};
+}) => `${consoleColors[color]}${output}${consoleColors.default}`;
 
 export const arrayToMatrix = (rawData: RawData) => {
   const findByType = (map: MatrixNode[], type: string) => {
@@ -26,6 +24,7 @@ export const arrayToMatrix = (rawData: RawData) => {
 
   const matrix: Matrix = {
     map: [],
+    conditions: {},
     initialPos: (map) => findByType(map, "start"),
     finalPos: (map) => findByType(map, "end"),
   };
@@ -77,3 +76,68 @@ export const matrixToArray = (matrix: Matrix) => {
 
 export const findNodeByPos = (map: MatrixNode[], x: number, y: number) =>
   map.find((el) => el.x == x && el.y == y);
+
+export const printMatrix = (matrix: Matrix) => {
+  if (matrix.conditions.canStart == false) {
+    console.log(
+      coloredString({
+        color: "red",
+        output: "Initial or final position blocked\n",
+      })
+    );
+  }
+  if (matrix.conditions.success == false) {
+    console.log(
+      coloredString({
+        color: "red",
+        output: "Could not find a way to the end\n",
+      })
+    );
+  }
+  if (matrix.conditions.success == true && matrix.shortestPath != undefined) {
+    console.log(`Shortest path is ${matrix.shortestPath.length} steps long.\n`);
+  }
+
+  /**
+   * TODO: FIX THIS
+   */
+  const space = "      ";
+  let i = 0,
+    line = "",
+    total = "";
+
+  matrix.map.forEach((el, index) => {
+    if (el.value != undefined) {
+      if (el.x != i) {
+        i++;
+        total += space + line + "\n";
+        line = "";
+      }
+
+      el.value = el.value === "" ? " " : el.value;
+
+      const output = el.blocked
+        ? coloredString({ color: "gray", output: el.value })
+        : el.type == "start"
+        ? coloredString({ color: "yellow", output: el.value })
+        : el.type == "end"
+        ? coloredString({ color: "blue", output: el.value })
+        : matrix.shortestPath?.find(
+            (element) => el.x == element.x && el.y == element.y
+          )
+        ? coloredString({ color: "green", output: el.value })
+        : el.visited
+        ? coloredString({ output: "3" })
+        : coloredString({ output: el.value });
+
+      line += output + "  ";
+
+      if (index == matrix.map.length - 1) {
+        total += space + line + "\n";
+        line = "";
+      }
+    }
+  });
+
+  console.log(total, "\n");
+};

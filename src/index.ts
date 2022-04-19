@@ -2,9 +2,11 @@ const fs = require("fs");
 const yargs = require("yargs");
 
 import { findPath } from "./findPath";
-import { arrayToMatrix, coloredLog, matrixToArray } from "./utils";
+import { arrayToMatrix, coloredString, printMatrix } from "./utils";
 
-coloredLog({ color: "blue", output: "PATHFINDER ALGORITHM START\n" });
+console.log(
+  coloredString({ color: "blue", output: "PATHFINDER ALGORITHM START\n" })
+);
 
 // Parse arguments
 const { argv } = yargs.option("jsonFile", {
@@ -14,13 +16,12 @@ const { argv } = yargs.option("jsonFile", {
   type: "string",
 });
 
-// Not fully supported yet
 const data: RawData = argv.f
   ? (() => JSON.parse(fs.readFileSync(argv.f)))()
   : [
-      [1, 1, 1, 1, 1, 1],
-      [1, 1, "s", 1, "E", 1],
-      [1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 1],
+      [1, 1, "S", 1, "E", 1],
+      [1, 1, 1, 1, 0, 0],
       [1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 1],
@@ -34,8 +35,8 @@ const matrix = arrayToMatrix(data);
 // console.log(initialPos);
 // console.log(finalPos, "\n");
 
-console.log(findPath(matrix), "\n");
+printMatrix(findPath(matrix));
 
-// coloredLog({ color: "green", output: "coloredLog\n" });
-
-coloredLog({ color: "blue", output: "PATHFINDER ALGORITHM END" });
+console.log(
+  coloredString({ color: "blue", output: "PATHFINDER ALGORITHM END" })
+);
