@@ -16,7 +16,7 @@ export const coloredString = ({
 }) => `${consoleColors[color]}${output}${consoleColors.default}`;
 
 export const arrayToMatrix = (rawData: RawData) => {
-  const findByType = (map: MatrixNode[], type: string) => {
+  const findByType = (map: Matrix["map"], type: MatrixNode["type"]) => {
     const foundNode = map.find((el) => el.type == type);
     if (foundNode) return foundNode;
     throw new Error(`Could not find "${type}" node`);
@@ -119,13 +119,19 @@ export const printMatrix = (matrix: Matrix) => {
       const output = el.blocked
         ? coloredString({ color: "gray", output: el.value })
         : el.type == "start"
-        ? coloredString({ color: "yellow", output: el.value })
+        ? coloredString({
+            color: "blue",
+            output: el.value.toString().toUpperCase(),
+          })
         : el.type == "end"
-        ? coloredString({ color: "blue", output: el.value })
+        ? coloredString({
+            color: "yellow",
+            output: el.value.toString().toUpperCase(),
+          })
         : matrix.shortestPath?.find(
             (element) => el.x == element.x && el.y == element.y
           )
-        ? coloredString({ color: "green", output: el.value })
+        ? coloredString({ color: "green", output: "3" })
         : el.visited
         ? coloredString({ output: "3" })
         : coloredString({ output: el.value });
@@ -134,7 +140,6 @@ export const printMatrix = (matrix: Matrix) => {
 
       if (index == matrix.map.length - 1) {
         total += space + line + "\n";
-        line = "";
       }
     }
   });

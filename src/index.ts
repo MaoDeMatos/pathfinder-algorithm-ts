@@ -27,15 +27,9 @@ const data: RawData = argv.f
       [1, 0, 0, 0, 0, 1],
     ];
 
-const matrix = arrayToMatrix(data);
-
-// console.log(matrix);
-// console.log(matrixToArray(matrix), "\n");
-
-// console.log(initialPos);
-// console.log(finalPos, "\n");
-
-printMatrix(findPath(matrix));
+const baseMatrix = arrayToMatrix(data);
+const processedMatrix = findPath(baseMatrix);
+printMatrix(processedMatrix);
 
 console.log(
   coloredString({ color: "blue", output: "PATHFINDER ALGORITHM END" })

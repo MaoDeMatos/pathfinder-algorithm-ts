@@ -8,8 +8,8 @@ type Matrix = {
     canStart?: boolean;
     success?: boolean;
   };
-  initialPos: (map: MatrixNode[]) => MatrixNode;
-  finalPos: (map: MatrixNode[]) => MatrixNode;
+  initialPos: (map: Matrix["map"]) => MatrixNode;
+  finalPos: (map: Matrix["map"]) => MatrixNode;
 };
 
 type MatrixNode = {

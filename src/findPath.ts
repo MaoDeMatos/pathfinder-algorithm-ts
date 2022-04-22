@@ -17,9 +17,11 @@ export const findPath = (matrix: Matrix): Matrix => {
   const initialPos = matrix.initialPos(matrix.map);
   const finalPos = matrix.finalPos(matrix.map);
 
+  const newMatrix = matrix;
+
   if (initialPos.blocked || finalPos.blocked) {
-    matrix.conditions.canStart == false;
-    return matrix;
+    newMatrix.conditions.canStart == false;
+    return newMatrix;
   } else {
     initialPos.visited = true;
   }
@@ -36,12 +38,10 @@ export const findPath = (matrix: Matrix): Matrix => {
 
     if (currentNode.type == "end") {
       queue.length = 0;
-      const newMatrix: Matrix = {
-        ...matrix,
-        map: map,
-        shortestPath: path,
-        conditions: { success: true },
-      };
+      newMatrix.map = map;
+      newMatrix.shortestPath = path;
+      newMatrix.conditions.success = true;
+
       return newMatrix;
     }
 
@@ -57,6 +57,6 @@ export const findPath = (matrix: Matrix): Matrix => {
     }
   }
 
-  matrix.conditions.success = false;
-  return matrix;
+  newMatrix.conditions.success = false;
+  return newMatrix;
 };
