@@ -1,8 +1,7 @@
 type RawData = (string | number)[][];
 
 type Matrix = {
-  map: MatrixNode[];
-  size?: number[];
+  map: MatrixNode[][];
   shortestPath?: MatrixNode[];
   conditions: {
     canStart?: boolean;

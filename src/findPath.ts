@@ -1,9 +1,3 @@
-// type findPathParamsType = {
-//   matrix: Matrix;
-//   initialPos: MatrixNode;
-//   finalPos: MatrixNode;
-// };
-
 import { findNodeByPos } from "./utils";
 
 export const findPath = (matrix: Matrix): Matrix => {

@@ -16,17 +16,20 @@ export const coloredString = ({
 }) => `${consoleColors[color]}${output}${consoleColors.default}`;
 
 export const arrayToMatrix = (rawData: RawData) => {
-  const findByType = (map: Matrix["map"], type: MatrixNode["type"]) => {
-    const foundNode = map.find((el) => el.type == type);
-    if (foundNode) return foundNode;
+  const findNodeByType = (map: Matrix["map"], type: MatrixNode["type"]) => {
+    for (let i = 0; i < map.length; i++) {
+      const arr = map[i];
+      const foundNode = arr.find((el) => el.type == type);
+      if (foundNode) return foundNode;
+    }
     throw new Error(`Could not find "${type}" node`);
   };
 
   const matrix: Matrix = {
     map: [],
     conditions: {},
-    initialPos: (map) => findByType(map, "start"),
-    finalPos: (map) => findByType(map, "end"),
+    initialPos: (map) => findNodeByType(map, "start"),
+    finalPos: (map) => findNodeByType(map, "end"),
   };
 
   let i = 0;
@@ -34,6 +37,10 @@ export const arrayToMatrix = (rawData: RawData) => {
 
   for (i = 0; i < rawData.length; i++) {
     const line = rawData[i];
+
+    if (!matrix.map[i]) {
+      matrix.map.push([]);
+    }
 
     for (j = 0; j < line.length; j++) {
       const value = line[j];
@@ -49,33 +56,20 @@ export const arrayToMatrix = (rawData: RawData) => {
           valueString == "s" ? "start" : valueString == "e" ? "end" : "normal",
       };
 
-      matrix.map.push(thisNode);
+      matrix.map[i].push(thisNode);
     }
   }
-
-  matrix.size = [i, j];
 
   return matrix;
 };
 
-export const matrixToArray = (matrix: Matrix) => {
-  const map: RawData = [];
-
-  matrix.map.forEach((el) => {
-    if (el.value != undefined) {
-      if (!map[el.x - 1]) {
-        map.push([el.value]);
-      } else {
-        map[el.x - 1].push(el.value);
-      }
-    }
-  });
-
-  return map;
+export const findNodeByPos = (map: Matrix["map"], x: number, y: number) => {
+  for (let i = 0; i < map.length; i++) {
+    const arr = map[i];
+    const result = arr.find((el) => el.x == x && el.y == y);
+    if (result) return result;
+  }
 };
-
-export const findNodeByPos = (map: MatrixNode[], x: number, y: number) =>
-  map.find((el) => el.x == x && el.y == y);
 
 export const printMatrix = (matrix: Matrix) => {
   if (matrix.conditions.canStart == false) {
@@ -98,25 +92,17 @@ export const printMatrix = (matrix: Matrix) => {
     console.log(`Shortest path is ${matrix.shortestPath.length} steps long.\n`);
   }
 
-  /**
-   * TODO: FIX THIS
-   */
   const space = "      ";
-  let i = 0,
-    line = "",
-    total = "";
+  let total = "";
 
-  matrix.map.forEach((el, index) => {
-    if (el.value != undefined) {
-      if (el.x != i) {
-        i++;
-        total += space + line + "\n";
-        line = "";
-      }
+  for (let i = 0; i < matrix.map.length; i++) {
+    let line = space;
 
+    for (let j = 0; j < matrix.map[i].length; j++) {
+      const el = matrix.map[i][j];
       el.value = el.value === "" ? " " : el.value;
 
-      const output = el.blocked
+      const nodeOutput = el.blocked
         ? coloredString({ color: "gray", output: el.value })
         : el.type == "start"
         ? coloredString({
@@ -136,13 +122,10 @@ export const printMatrix = (matrix: Matrix) => {
         ? coloredString({ output: "3" })
         : coloredString({ output: el.value });
 
-      line += output + "  ";
-
-      if (index == matrix.map.length - 1) {
-        total += space + line + "\n";
-      }
+      line += nodeOutput + "  ";
     }
-  });
+    total += line + "\n";
+  }
 
-  console.log(total, "\n");
+  console.log(total);
 };
